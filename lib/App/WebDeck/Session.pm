@@ -8,13 +8,10 @@ App::WebDeck - A Web-Based Deck of Cards Server
 =cut
 
 use App::WebDeck::SimpleRoute;
-use Continuity;
 use Template::Semantic;
-use Coro::AnyEvent;
 use JSON::XS;
 use List::MoreUtils qw/all/;
 use Data::Dumper;
-use File::ShareDir;
 
 our @movewatch_list = ();
 our $deck = [];
