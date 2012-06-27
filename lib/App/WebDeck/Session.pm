@@ -1,5 +1,5 @@
 
-class App::WebDeck {
+class App::WebDeck::Session {
 
 =head1 NAME
 
