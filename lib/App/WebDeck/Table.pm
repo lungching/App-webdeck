@@ -5,6 +5,10 @@ class App::WebDeck::Table {
 
 App::WebDeck::Table - Holds the elements of a game
 
+=head1 DESCRIPTION
+
+The idea here is to represent the actual table that you are sitting down and playing a game on. So it holds the cards, and eventually the stack of cards. It should have an idea of what players there are.
+
 =cut
 
 use App::WebDeck::Card;

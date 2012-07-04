@@ -5,6 +5,12 @@ class App::WebDeck::Session {
 
 App::WebDeck::Session - A single player's connection to the server
 
+=head1 DESCRIPTION
+
+Each browser (client) gets two sessions. One session is for normal sends to the server, such as when they move a card. The second is a long-pull (push) session, which waits for updates from the server.
+
+Dev note: Probably we should think about these two separate sessions and work out how they should be separated in the code layout, if they indeed need such treatment.
+
 =cut
 
 use App::WebDeck::SimpleRoute;
@@ -25,7 +31,7 @@ has docroot => (is => 'rw'); # Maybe this shouldn't be per-session
 has request => (is => 'rw');
 
 has table => (
-  is => 'rw',
+  is  => 'rw',
   isa => 'Maybe[App::WebDeck::Table]',
 );
 
@@ -75,14 +81,6 @@ method stream {
       card   => $card->to_hash,
       sid    => $self->request->session_id,
     }));
-    # encode_json({
-      # action => "movecard",
-      # id     => "card$id",
-      # x      => $deck->[$id]->{x},
-      # y      => $deck->[$id]->{y},
-      # z      => $deck->[$id]->{z},
-      # sid    => $self->request->session_id,
-    # }));
     $self->request->next;
   }
 }
@@ -90,8 +88,10 @@ method stream {
 method movecard(:$id, :$x, :$y, :$z) {
   print "move $id -> $x, $y, $z\n";
   $id =~ s/card//;
+
   # my $card = $self->table->get_card_by_id($id);
   my $card = $global_table->get_card_by_id($id);
+
   # Set our new position
   $card->position([$x, $y, $z]);
 

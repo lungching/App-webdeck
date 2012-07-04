@@ -1,6 +1,18 @@
 
 class App::WebDeck::Card {
 
+=head1 NAME
+
+App::WebDeck::Card - A single card
+
+=head1 DESCRIPTION
+
+Each card has it's own state -- where it is on the table, whether it is face-up or face-down, and a unique ID that can be used by users to refer to the card. Also whether or not someone is holding the card.
+
+Dev-note: Each card should get it's own UUID. This UUID would be changed whenever we need to obscure which card it is. This would certainly happen whenever a set of cards is shuffled. It should also happen after every operation in a person's hand I think, among all the cards in the hand. Otherwise other players might be able to "peek", tracking the card as it stays in the first player's hand. Food for thought.
+
+=cut
+
 use Moose::Util::TypeConstraints;
 
 enum orientation => [qw( face_up face_down )];
