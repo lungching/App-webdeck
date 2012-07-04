@@ -28,11 +28,11 @@ function got_instructions(data) {
   // alert("Got action: " + data.action);
   if(data.action == 'movecard') {
     //alert("Moving card " + data.id + " to " + data.x + "," + data.y);
-    var card = $('#' + data.id);
-    card.parent().css('z-index', data.z);
+    var card = $('#card' + data.card.id);
+    card.parent().css('z-index', data.card.z);
     card.parent().animate({
-      top: data.y,
-      left: data.x
+      top: data.card.y,
+      left: data.card.x
     }, 1000);
   }
   if(data.sid) {

@@ -3,11 +3,12 @@ class App::WebDeck::Session {
 
 =head1 NAME
 
-App::WebDeck - A Web-Based Deck of Cards Server
+App::WebDeck::Session - A single player's connection to the server
 
 =cut
 
 use App::WebDeck::SimpleRoute;
+use App::WebDeck::Table;
 use Template::Semantic;
 use JSON::XS;
 use List::MoreUtils qw/all/;
@@ -16,37 +17,42 @@ use Data::Dumper;
 our @movewatch_list = ();
 our $deck = [];
 
-has docroot => (is => 'rw');
+# For now we'll just have one global table
+# Later we'll have a list of them
+our $global_table;
+
+has docroot => (is => 'rw'); # Maybe this shouldn't be per-session
 has request => (is => 'rw');
 
-method initialize_deck {
-  my $share_dir = $self->docroot;
-  say STDERR "Looking at ls $share_dir/img/classic-jokers/card*.png";
-  my @card_paths = `ls $share_dir/img/classic-jokers/card*.png`;
-  @card_paths = map { chomp ; $_ } @card_paths;
-  @card_paths = map { s/.*img/img/ ; $_ } @card_paths;
-  say "Card paths: " . Dumper([@card_paths]);
-  my $id = 0;
-  $deck = [ map { {
-    path => "/$_",
-    x => 0,
-    y => 0,
-    z => 0,
-    id => $id++,
-  } } @card_paths ];
+has table => (
+  is => 'rw',
+  isa => 'Maybe[App::WebDeck::Table]',
+);
+
+method initialize_table {
+  say "Initializing table!";
+  $global_table = App::WebDeck::Table->new(
+    deck_path => $self->docroot . "/img/classic-jokers",
+  );
+  use Data::Printer;
+  p($global_table);
 }
 
 method index {
-  if(! @{ $deck }) {
-    $self->initialize_deck;
+
+  # bah. this will change once we have a table list
+  if(! $global_table) {
+    $self->initialize_table;
   }
+  $self->table($global_table);
+
   $self->request->print(
     Template::Semantic->process($self->docroot . "/template/hello.html" => {
-      'title, #header h2' => 'WebDeck',
-      '#thetable h2' => $self->request->session_id,
+      'title, #header h2'  => 'WebDeck',
+      '#thetable h2'       => $self->request->session_id,
       '#thetable div.card' => [
-        map { { 'img@src' => $_->{path}, 'img@id' => "card$_->{id}" } }
-        @$deck
+        map { { 'img@src' => ("/img/classic-jokers/" . $_->face_img), 'img@id' => "card" . $_->id } }
+        @{ $self->table->cards }
       ],
     })
   );
@@ -63,15 +69,20 @@ method stream {
   while(1) {
     my $watcher = AnyEvent->condvar;
     push @movewatch_list, $watcher;
-    my ($id) = $watcher->recv; # wait for a move
+    my ($card) = $watcher->recv; # wait for a move
     $self->request->print(encode_json({
-      action => "movecard",
-      id     => "card$id",
-      x      => $deck->[$id]->{x},
-      y      => $deck->[$id]->{y},
-      z      => $deck->[$id]->{z},
+      action => 'movecard',
+      card   => $card->to_hash,
       sid    => $self->request->session_id,
     }));
+    # encode_json({
+      # action => "movecard",
+      # id     => "card$id",
+      # x      => $deck->[$id]->{x},
+      # y      => $deck->[$id]->{y},
+      # z      => $deck->[$id]->{z},
+      # sid    => $self->request->session_id,
+    # }));
     $self->request->next;
   }
 }
@@ -79,13 +90,14 @@ method stream {
 method movecard(:$id, :$x, :$y, :$z) {
   print "move $id -> $x, $y, $z\n";
   $id =~ s/card//;
-  $deck->[$id]->{x} = $x;
-  $deck->[$id]->{y} = $y;
-  $deck->[$id]->{z} = $z;
+  # my $card = $self->table->get_card_by_id($id);
+  my $card = $global_table->get_card_by_id($id);
+  # Set our new position
+  $card->position([$x, $y, $z]);
 
   # Notify all listeners that we have done a move
   while(my $watcher = shift @movewatch_list) {
-    $watcher->send($id);
+    $watcher->send($card);
   }
 
   # Output something so that the AJAX request won't get mad :)
