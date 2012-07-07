@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 # The entire point of this is just to kick off the server
 # It should also maybe parse command line options.
