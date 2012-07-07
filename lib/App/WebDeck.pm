@@ -1,5 +1,11 @@
 package App::WebDeck;
 
+=head1 NAME
+
+App::WebDeck - Web based deck of cards
+
+=cut
+
 use v5.14;
 
 use everywhere '5.010; use MooseX::Declare',
