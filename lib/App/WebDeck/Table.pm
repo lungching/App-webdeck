@@ -38,12 +38,10 @@ method BUILD {
   @card_paths = map { chomp ; $_ } @card_paths;
   @card_paths = map { s/.*\/// ; $_ } @card_paths;
   say "Card files: " . p(@card_paths);
-  my $id = 0;
   my $deck = [ map {
     App::WebDeck::Card->new(
       back_img => 'back.png',
       face_img => $_,
-      id => $id++,
     )
   } @card_paths ];
   p $deck;
@@ -51,7 +49,7 @@ method BUILD {
 }
 
 method get_card_by_id($id) {
-  my ($card) = grep { $_->id == $id } @{ $self->cards };
+  my ($card) = grep { $_->id eq $id } @{ $self->cards };
   return $card;
 }
 

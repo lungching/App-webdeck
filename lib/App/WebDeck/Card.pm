@@ -14,6 +14,7 @@ Dev-note: Each card should get it's own UUID. This UUID would be changed wheneve
 =cut
 
 use Moose::Util::TypeConstraints;
+use UUID::Tiny ':std';
 
 enum orientation => [qw( face_up face_down )];
 
@@ -46,11 +47,15 @@ has back_img => (
   isa => 'Str',
 );
 
-# TODO: Switch to UUID
 has id => (
-  is  => 'rw',
-  isa => 'Int',
+  is      => 'rw',
+  isa     => 'Str',
+  default => sub { create_uuid_as_string(UUID_V4) },
 );
+
+method reset_uuid {
+  $self->id( create_uuid_as_string(UUID_V4) );
+}
 
 method get_position {
   return @{ $self->position };
