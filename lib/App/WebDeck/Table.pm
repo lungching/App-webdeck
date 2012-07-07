@@ -12,6 +12,7 @@ The idea here is to represent the actual table that you are sitting down and pla
 =cut
 
 use App::WebDeck::Card;
+use Data::Printer;
 
 has cards => (
   is      => 'rw',
@@ -30,7 +31,6 @@ has deck_path => (
   isa => 'Str',
 );
 
-use Data::Printer;
 method BUILD {
   my $deck_path = $self->deck_path;
   say STDERR "Looking at ls $deck_path/card*.png";

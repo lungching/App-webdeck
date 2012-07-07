@@ -25,7 +25,7 @@ function doneMovingCard(event, ui) {
 }
 
 function got_instructions(data) {
-  // alert("Got action: " + data.action);
+  console.log("Got action: " + data.action);
   if(data.action == 'movecard') {
     //alert("Moving card " + data.id + " to " + data.x + "," + data.y);
     var card = $('#card' + data.card.id);
@@ -35,6 +35,13 @@ function got_instructions(data) {
       left: data.card.x
     }, 1000);
   }
+
+  if(data.action == 'flipcard') {
+    var card = $('#card' + data.card.id);
+    card.attr('src', '/img/classic-jokers/' + data.card.path);
+    // console.log("card " + data.card.id + " new path " + card.attr('src'));
+  }
+
   if(data.sid) {
     poll_server(data.sid);
   }
@@ -68,5 +75,10 @@ $(function() {
   setTimeout(function () {
     start_poll_stream();
   }, 500);
+
+  $('img').live('dblclick',  function() {
+    $.get('/flipcard/' + this.id);
+  });
+
 });
 

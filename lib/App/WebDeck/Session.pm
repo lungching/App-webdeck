@@ -18,10 +18,9 @@ use App::WebDeck::Table;
 use Template::Semantic;
 use JSON::XS;
 use List::MoreUtils qw/all/;
-use Data::Dumper;
+use Data::Printer;
 
 our @movewatch_list = ();
-our $deck = [];
 
 # For now we'll just have one global table
 # Later we'll have a list of them
@@ -40,8 +39,6 @@ method initialize_table {
   $global_table = App::WebDeck::Table->new(
     deck_path => $self->docroot . "/img/classic-jokers",
   );
-  use Data::Printer;
-  p($global_table);
 }
 
 method index {
@@ -57,7 +54,7 @@ method index {
       'title, #header h2'  => 'WebDeck',
       '#thetable h2'       => $self->request->session_id,
       '#thetable div.card' => [
-        map { { 'img@src' => ("/img/classic-jokers/" . $_->face_img), 'img@id' => "card" . $_->id } }
+        map { { 'img@src' => ("/img/classic-jokers/" . $_->back_img), 'img@id' => "card" . $_->id } }
         @{ $self->table->cards }
       ],
     })
@@ -75,9 +72,9 @@ method stream {
   while(1) {
     my $watcher = AnyEvent->condvar;
     push @movewatch_list, $watcher;
-    my ($card) = $watcher->recv; # wait for a move
+    my ($card, $action) = $watcher->recv; # wait for a move
     $self->request->print(encode_json({
-      action => 'movecard',
+      action => $action,
       card   => $card->to_hash,
       sid    => $self->request->session_id,
     }));
@@ -97,7 +94,7 @@ method movecard(:$id, :$x, :$y, :$z) {
 
   # Notify all listeners that we have done a move
   while(my $watcher = shift @movewatch_list) {
-    $watcher->send($card);
+    $watcher->send($card, 'movecard');
   }
 
   # Output something so that the AJAX request won't get mad :)
@@ -105,12 +102,32 @@ method movecard(:$id, :$x, :$y, :$z) {
   # close session HERE
 }
 
+method flipcard(:$id) {
+
+  $id =~ s/\D*//;
+  my $card = $global_table->get_card_by_id($id);
+
+  say "flipping $id";
+
+  $card->switch_orientation();
+
+  # Notify all listeners that we have done a move
+  while(my $watcher = shift @movewatch_list) {
+    $watcher->send($card, 'flipcard');
+  }
+
+  # Output something so that the AJAX request won't get mad :)
+  $self->request->print("Card flipped!");
+}
+
+
 method main {
   my $path = $self->request->url_path;
   route $path => [
     '/hello'                 => sub { $self->request->print("HELLO") },
     '/stream'                => sub { $self->stream },
     '/movecard/:id/:x/:y/:z' => sub { $self->movecard(@_) },
+    '/flipcard/:id'          => sub { $self->flipcard(@_) },
     '.*'                     => sub { $self->index },
   ];
 }

@@ -69,7 +69,12 @@ method to_hash {
     z => $z,
     id => $self->id,
     orientation => $self->currentOrientation,
+    path => $self->currentOrientation eq 'face_up' ? $self->face_img : $self->back_img,
   };
+}
+
+method switch_orientation {
+    $self->currentOrientation() eq 'face_up' ? $self->currentOrientation('face_down') : $self->currentOrientation('face_up');
 }
 
 }
