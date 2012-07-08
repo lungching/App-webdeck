@@ -14,10 +14,12 @@ var max_zindex = 100;
 
 function startMovingCard(event, ui) {
   ui.helper.css('z-index', max_zindex++);
+  ui.helper.css('box-shadow', '10px 10px 5px #333');
 }
 
 
 function doneMovingCard(event, ui) {
+  ui.helper.css('box-shadow', 'none');
   var id = ui.helper.attr('id');
   id = ui.helper.children('img').attr('id');
   var z = ui.helper.css('z-index');
