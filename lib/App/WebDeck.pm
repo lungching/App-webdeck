@@ -18,7 +18,7 @@ use App::WebDeck::Session;
 sub make_app {
 
   my $share_dir = eval { File::ShareDir::dist_dir('App-WebDeck') };
-  $share_dir = 'share' if $@ && -d 'share'; # for development mode
+  $share_dir = 'share' if $@ || -d 'share'; # for development mode
 
   my $server = Continuity->new(
     query_session  => 'sid',

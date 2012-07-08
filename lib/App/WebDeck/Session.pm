@@ -71,7 +71,7 @@ method stream {
   # Now we'll stream them updates
   while(1) {
     my $watcher = AnyEvent->condvar;
-    push @movewatch_list, $watcher;
+    $global_table->add_cardmove_watcher( $watcher );
     my ($card, $action) = $watcher->recv; # wait for a move
     $self->request->print(encode_json({
       action => $action,
@@ -82,42 +82,30 @@ method stream {
   }
 }
 
-method movecard(:$id, :$x, :$y, :$z) {
+method move_card(:$id, :$x, :$y, :$z) {
+  $id =~ s/^card//;
   print "move $id -> $x, $y, $z\n";
-  $id =~ s/card//;
 
-  # my $card = $self->table->get_card_by_id($id);
-  my $card = $global_table->get_card_by_id($id);
-
-  # Set our new position
-  $card->position([$x, $y, $z]);
-
-  # Notify all listeners that we have done a move
-  while(my $watcher = shift @movewatch_list) {
-    $watcher->send($card, 'movecard');
-  }
+  $global_table->move_card(
+    card_id => $id,
+    x => $x,
+    y => $y,
+    z => $z,
+  );
 
   # Output something so that the AJAX request won't get mad :)
   $self->request->print("Card moved!");
   # close session HERE
 }
 
-method flipcard(:$id) {
+method flip_card(:$id) {
+  $id =~ s/^card//;
+  say "flip card $id";
 
-  $id =~ s/\D*//;
-  my $card = $global_table->get_card_by_id($id);
+  $global_table->flip_card( card_id => $id );
 
-  say "flipping $id";
-
-  $card->switch_orientation();
-
-  # Notify all listeners that we have done a move
-  while(my $watcher = shift @movewatch_list) {
-    $watcher->send($card, 'flipcard');
-  }
-
-  # Output something so that the AJAX request won't get mad :)
   $self->request->print("Card flipped!");
+
 }
 
 
@@ -126,8 +114,8 @@ method main {
   route $path => [
     '/hello'                 => sub { $self->request->print("HELLO") },
     '/stream'                => sub { $self->stream },
-    '/movecard/:id/:x/:y/:z' => sub { $self->movecard(@_) },
-    '/flipcard/:id'          => sub { $self->flipcard(@_) },
+    '/movecard/:id/:x/:y/:z' => sub { $self->move_card(@_) },
+    '/flipcard/:id'          => sub { $self->flip_card(@_) },
     '.*'                     => sub { $self->index },
   ];
 }

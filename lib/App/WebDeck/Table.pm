@@ -26,6 +26,12 @@ has players => (
   default => sub { [] },
 );
 
+has cardmove_watcher => (
+  is      => 'rw',
+  isa     => 'ArrayRef',
+  default => sub { [] },
+);
+
 has deck_path => (
   is  => 'rw',
   isa => 'Str',
@@ -52,6 +58,37 @@ method get_card_by_id($id) {
   my ($card) = grep { $_->id eq $id } @{ $self->cards };
   return $card;
 }
+
+method add_cardmove_watcher($watcher) {
+  push @{ $self->cardmove_watcher }, $watcher;
+}
+
+method move_card(:$card_id, :$x, :$y, :$z) {
+  my $card = $self->get_card_by_id($card_id);
+
+  # Set our new position
+  $card->position([$x, $y, $z]);
+
+  # Notify all listeners that we have done a move
+  say "sending all notifications";
+  while(my $watcher = shift @{ $self->cardmove_watcher }) {
+    say "Notifying...";
+    # $watcher->send($card);
+    $watcher->send($card, 'movecard');
+  }
+}
+
+method flip_card(:$card_id) {
+  my $card = $self->get_card_by_id($card_id);
+
+  $card->switch_orientation();
+
+  # Notify all listeners that we have done a move
+  while(my $watcher = shift @{ $self->cardmove_watcher }) {
+    $watcher->send($card, 'flipcard');
+  }
+}
+
 
 }
 
