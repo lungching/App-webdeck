@@ -1,9 +1,9 @@
 
-class App::WebDeck::Table {
+class App::GarKarRum::Table {
 
 =head1 NAME
 
-App::WebDeck::Table - Holds the elements of a game
+App::GarKarRum::Table - Holds the elements of a game
 
 =head1 DESCRIPTION
 
@@ -11,19 +11,19 @@ The idea here is to represent the actual table that you are sitting down and pla
 
 =cut
 
-use App::WebDeck::Card;
+use App::GarKarRum::Card;
 use Data::Printer;
 use List::Util qw( shuffle );
 
 has cards => (
   is      => 'rw',
-  isa     => 'ArrayRef[App::WebDeck::Card]',
+  isa     => 'ArrayRef[App::GarKarRum::Card]',
   default => sub { [] },
 );
 
 has players => (
   is      => 'rw',
-  isa     => 'ArrayRef[App::WebDeck::User]',
+  isa     => 'ArrayRef[App::GarKarRum::User]',
   default => sub { [] },
 );
 
@@ -47,7 +47,7 @@ method BUILD {
   say "Card files: " . p(@card_paths);
   @card_paths = shuffle @card_paths;
   my $deck = [ map {
-    App::WebDeck::Card->new(
+    App::GarKarRum::Card->new(
       back_img => 'back.png',
       face_img => $_,
     )

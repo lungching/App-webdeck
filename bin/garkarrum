@@ -12,10 +12,10 @@ BEGIN {
   }
 }
 
-use App::WebDeck;
+use App::GarKarRum;
 use Plack::Builder;
 
 builder {
-  App::WebDeck::make_app();
+  App::GarKarRum::make_app();
 }
 

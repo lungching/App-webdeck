@@ -8,9 +8,9 @@ use Plack::Runner; # Force Continuity
  
 $Plack::Test::Impl = 'AnyEvent'; # or 'AE' for short
 
-use App::WebDeck;
+use App::GarKarRum;
 
-my $app = App::WebDeck::make_app();
+my $app = App::GarKarRum::make_app();
  
 test_psgi $app, sub {
   my $cb = shift;

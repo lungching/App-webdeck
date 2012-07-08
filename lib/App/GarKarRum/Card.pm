@@ -1,9 +1,9 @@
 
-class App::WebDeck::Card {
+class App::GarKarRum::Card {
 
 =head1 NAME
 
-App::WebDeck::Card - A single card
+App::GarKarRum::Card - A single card
 
 =head1 DESCRIPTION
 
@@ -33,7 +33,7 @@ has position => (
 
 has currentHolder => (
   is      => 'rw',
-  isa     => 'Maybe[App::WebDeck::User]', # or Player
+  isa     => 'Maybe[App::GarKarRum::User]', # or Player
   default => sub { undef },
 );
 

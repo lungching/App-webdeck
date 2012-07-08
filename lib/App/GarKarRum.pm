@@ -1,23 +1,23 @@
-package App::WebDeck;
+package App::GarKarRum;
 
 =head1 NAME
 
-App::WebDeck - Web based deck of cards
+App::GarKarRum - Web based deck of cards
 
 =cut
 
 use v5.14;
 
 use everywhere '5.010; use MooseX::Declare',
-  matching => '^App/WebDeck';
+  matching => '^App/GarKarRum';
 
 use Continuity;
 use File::ShareDir;
-use App::WebDeck::Session;
+use App::GarKarRum::Session;
 
 sub make_app {
 
-  my $share_dir = eval { File::ShareDir::dist_dir('App-WebDeck') };
+  my $share_dir = eval { File::ShareDir::dist_dir('App-GarKarRum') };
   $share_dir = 'share' if $@ || -d 'share'; # for development mode
 
   my $server = Continuity->new(
@@ -25,7 +25,7 @@ sub make_app {
     cookie_session => 0,
     docroot        => $share_dir,
     callback       => sub {
-      my $app = App::WebDeck::Session->new(
+      my $app = App::GarKarRum::Session->new(
         request => shift,
         docroot => $share_dir
       );

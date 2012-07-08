@@ -1,8 +1,8 @@
-package App::WebDeck::SimpleRoute;
+package App::GarKarRum::SimpleRoute;
 
 =head1 NAME
 
-App::WebDeck::SimpleRoute - Minimalist path matching and routing
+App::GarKarRum::SimpleRoute - Minimalist path matching and routing
 
 =head1 SYNOPSIS
 

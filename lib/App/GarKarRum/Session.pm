@@ -1,9 +1,9 @@
 
-class App::WebDeck::Session {
+class App::GarKarRum::Session {
 
 =head1 NAME
 
-App::WebDeck::Session - A single player's connection to the server
+App::GarKarRum::Session - A single player's connection to the server
 
 =head1 DESCRIPTION
 
@@ -13,8 +13,8 @@ Dev note: Probably we should think about these two separate sessions and work ou
 
 =cut
 
-use App::WebDeck::SimpleRoute;
-use App::WebDeck::Table;
+use App::GarKarRum::SimpleRoute;
+use App::GarKarRum::Table;
 use Template::Semantic;
 use JSON::XS;
 use List::MoreUtils qw/all/;
@@ -31,12 +31,12 @@ has request => (is => 'rw');
 
 has table => (
   is  => 'rw',
-  isa => 'Maybe[App::WebDeck::Table]',
+  isa => 'Maybe[App::GarKarRum::Table]',
 );
 
 method initialize_table {
   say "Initializing table!";
-  $global_table = App::WebDeck::Table->new(
+  $global_table = App::GarKarRum::Table->new(
     deck_path => $self->docroot . "/img/classic-jokers",
   );
 }
@@ -51,7 +51,7 @@ method index {
 
   $self->request->print(
     Template::Semantic->process($self->docroot . "/template/hello.html" => {
-      'title, #header h2'  => 'WebDeck',
+      'title, #header h2'  => 'GarKarRum',
       '#thetable h2'       => $self->request->session_id,
       '#thetable div.card' => [
         map { { 'img@src' => ("/img/classic-jokers/" . $_->back_img), 'img@id' => "card" . $_->id } }

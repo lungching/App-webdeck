@@ -1,9 +1,9 @@
 
-class App::WebDeck::User {
+class App::GarKarRum::User {
 
 =head1 NAME
 
-App::WebDeck::User - A user or player
+App::GarKarRum::User - A user or player
 
 =head1 DESCRIPTION
 
