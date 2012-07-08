@@ -13,6 +13,7 @@ The idea here is to represent the actual table that you are sitting down and pla
 
 use App::WebDeck::Card;
 use Data::Printer;
+use List::Util qw( shuffle );
 
 has cards => (
   is      => 'rw',
@@ -44,6 +45,7 @@ method BUILD {
   @card_paths = map { chomp ; $_ } @card_paths;
   @card_paths = map { s/.*\/// ; $_ } @card_paths;
   say "Card files: " . p(@card_paths);
+  @card_paths = shuffle @card_paths;
   my $deck = [ map {
     App::WebDeck::Card->new(
       back_img => 'back.png',
