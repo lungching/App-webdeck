@@ -52,7 +52,6 @@ method index {
   $self->request->print(
     Template::Semantic->process($self->docroot . "/template/hello.html" => {
       'title, #header h2'  => 'GarKarRum',
-      '#thetable h2'       => $self->request->session_id,
       '#thetable div.card' => [
         map { { 'img@src' => ("/img/classic-jokers/" . $_->back_img), 'img@id' => "card" . $_->id } }
         @{ $self->table->cards }
