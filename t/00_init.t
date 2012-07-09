@@ -18,7 +18,7 @@ test_psgi $app, sub {
   my $res = $cb->(GET '/');
   $res->on_content_received( sub {
     my $content = shift;
-    like $content, qr/card-\d\d.png/, 'Found card';
+    like $content, qr/back.png/, 'Found card';
   });
   $res->recv;
 };
