@@ -1,6 +1,6 @@
 To test, do:
 
-  twiggy -Ilib bin/webdeck
+  twiggy -Ilib bin/garkarrum
 
 If you want to test based on the distro without installing, do:
 
