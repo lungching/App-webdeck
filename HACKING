@@ -1,10 +1,12 @@
 To test, do:
 
-  twiggy -Ilib bin/webdeck
+  twiggy  --port 9090 --host 127.0.0.1 -Ilib bin/garkarrum
+
+And then point your browser to http://127.0.0.1:9000/
 
 If you want to test based on the distro without installing, do:
 
-  dzil run 'twiggy bin/webdeck'
+  dzil run 'twiggy bin/garkarum'
 
 But that is a bit annoying if you want to make use of auto-reload.
 
